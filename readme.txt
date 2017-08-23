@@ -1,5 +1,5 @@
 FIT VUT @2014
-projekt IJA 2014 - klient-server labyrinth game 
+projekt IJA 2014 - client-server labyrinth game 
 version for HW3(0.3)
 team members:
     -logins: xfajci00,xpalac02

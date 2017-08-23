@@ -1,0 +1,100 @@
+<project name="IJA_JunitTestOnly" default="run" basedir=".">
+<description>IJA projekt build skript</description>
+
+<property name="srcdir" location="src"/>
+<property name="testdir" location="build/testdir"/>
+<property name="lib" location="lib"/>
+<property name="build" location="build"/>
+<property name="dest" location="dest-server"/>
+<property name="examples" location="examples"/>
+<property name="doc" location="doc"/>
+
+
+
+   
+   <!-- CLEAN -->
+   <target name="clean">
+      <delete dir="${build}"/>
+      <delete dir="${dest}"/>
+   </target>
+   
+   <!-- COMPILE (Dummy)-->
+   <target name="compile" depends="clean,compilesrc,jar,documentation">
+   </target>
+   
+   <!-- DOCUMENTATION -->
+   <target name="documentation">
+   <javadoc sourcepath="${srcdir}" destdir="${doc}" encoding="UTF-8" charset="UTF-8"></javadoc>
+   </target>
+   
+   <!-- COMPILE (Source code)-->
+   <target name="compilesrc" depends="clean">
+      <mkdir dir="${build}"/>
+      <javac includeantruntime="false"
+             srcdir="${srcdir}"
+             destdir="${build}" 
+             encoding="UTF-8"
+             classpath="${lib}/junit-4.10.jar:${src}"/>
+   </target>
+   <!-- BUILD JAR -->
+    <target name="jar" depends="clean,compilesrc">
+    <mkdir dir="${dest}"/>
+    <jar destfile="${dest}/ija2014-server.jar" 
+         basedir="${build}">
+    <manifest>
+    <attribute name="Main-Class"
+    value="ija.main.Init"/>
+    <attribute name="Class-Path"
+    value="lib/junit-4.10.jar"/>
+    </manifest>
+    </jar>
+    <mkdir dir="${dest}/lib"/>
+    <copy file="${lib}/junit-4.10.jar"
+    todir="${dest}/lib"/>
+    <mkdir dir="${dest}/examples"/>
+    <copy todir="${dest}/examples" >  
+        <fileset dir="${examples}" includes="**"/>  
+    </copy>
+    </target>
+    
+
+   <!-- RUN -->
+    <target name="run" depends="compilesrc,jar">
+    <java jar="${dest}/ija2014-server.jar"
+    dir="${dest}"
+    fork="true"/>
+    </target>
+
+   <!--  TESTS  -->
+   <path id="classpath.test">
+      <pathelement location="/lib/junit-4.10.jar" />
+      <pathelement location="${testdir}" />
+      <pathelement location="${srcdir}" />
+   </path>
+   
+   <target name="clean_test">
+      <delete dir="${testdir}"/>
+   </target>
+   <target name="compile_test" depends="clean_test">
+      <mkdir dir="${build}"/>
+      <mkdir dir="${testdir}"/>
+      <javac includeantruntime="false"
+             srcdir="${srcdir}"
+             destdir="${testdir}" 
+             encoding="UTF-8"
+             classpath="${lib}/junit-4.10.jar:${src}"/>
+   </target>
+   <target name="test" depends="compile_test">
+      <junit>
+         <classpath>
+          <path refid="classpath.test"/>
+          <pathelement path="${lib}/junit-4.10.jar"/>
+          <fileset dir="${testdir}"/>
+         </classpath>
+        
+         <formatter type="brief" usefile="false" />
+         <test name="ija.tests.TestUnits" />
+      </junit>
+   </target>
+
+</project>
